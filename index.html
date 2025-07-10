@@ -1,14 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="zh-Hant">
+
+<head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>狸來大獅打羽球</title>
-    <script type="module" crossorigin src="/assets/index-CaX577KM.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-CYVRpNrL.css">
-  </head>
-  <body>
-    <div id="app"></div>
-  </body>
+    <meta name="theme-color" content="#317EFB" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="manifest" href="manifest.json" />
+    <title>超迷你PWA通知測試</title>
+</head>
+
+<body>
+    <h1>✅ PWA Push 通知測試</h1>
+    <button id="subscribe">訂閱通知</button>
+    <button id="notify">測試通知</button>
+
+    <script>
+        // 註冊 Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker 註冊成功', reg))
+                .catch(err => console.error('Service Worker 註冊失敗', err));
+        }
+
+        // 點擊訂閱通知
+        document.getElementById('subscribe').addEventListener('click', async () => {
+            const permission = await Notification.requestPermission();
+            alert('通知權限狀態：' + permission);
+        });
+
+        // 點擊本地通知測試
+        document.getElementById('notify').addEventListener('click', () => {
+            console.log("Notification.permission", Notification.permission);
+            if (Notification.permission === 'granted') {
+                console.log("發送通知");
+                navigator.serviceWorker.getRegistration().then(reg => {
+                    if (reg) {
+                        reg.showNotification('這是PWA測試通知', {
+                            body: '你看到這則通知就代表成功了 🎉',
+                            icon: 'icons/icon-192.png',
+                            badge: 'icons/icon-72.png',
+                        });
+                    }
+                });
+            } else {
+                alert('尚未獲得通知權限');
+            }
+        });
+    </script>
+</body>
+
 </html>
